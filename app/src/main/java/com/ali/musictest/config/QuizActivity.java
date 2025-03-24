@@ -144,10 +144,6 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
 
         QuestionModel currentQuestion = questionModelList.get(currentQuestionIndex);
 
-        // Log: Cari sualın məlumatları
-        Log.d("QuizActivity", "Current Question: " + currentQuestion.getQuestion());
-        Log.d("QuizActivity", "Options: " + currentQuestion.getOptions().toString());
-        Log.d("QuizActivity", "Correct Answer: " + currentQuestion.getCorrect());
 
         questionIndicator.setText("Question " + (currentQuestionIndex + 1) + " / " + questionModelList.size());
         questionProgressIndicator.setProgress((int) ((currentQuestionIndex / (float) questionModelList.size()) * 100));
@@ -171,40 +167,45 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        Button clickedBtn = (Button) v;
+        Button clickedButton = (Button) v;
 
-        // Hər dəfə yeni sual göstərmədən əvvəl, hansı düymənin basıldığını yoxlayırıq
+        // Reset all button colors
         btn0.setBackgroundColor(getResources().getColor(R.color.gray));
         btn1.setBackgroundColor(getResources().getColor(R.color.gray));
         btn2.setBackgroundColor(getResources().getColor(R.color.gray));
         btn3.setBackgroundColor(getResources().getColor(R.color.gray));
 
-        if (v.getId() == R.id.btn0 || v.getId() == R.id.btn1 || v.getId() == R.id.btn2 || v.getId() == R.id.btn3) {
-            selectedAnswer = clickedBtn.getText().toString(); // Seçilən cavabı qeyd edin
-            clickedBtn.setBackgroundColor(getResources().getColor(R.color.orange));
+        if (v.getId() == R.id.btn0 || v.getId() == R.id.btn1 ||
+                v.getId() == R.id.btn2 || v.getId() == R.id.btn3) {
 
-            // "Next" düyməsini aktiv edin
+            selectedAnswer = clickedButton.getText().toString();
+            clickedButton.setBackgroundColor(getResources().getColor(R.color.orange));
             nextBtn.setEnabled(true);
 
-            // Log: Seçilən cavab və düzgün cavab
-            Log.d("QuizActivity", "Selected Answer: " + selectedAnswer);
-            Log.d("QuizActivity", "Correct Answer: " + questionModelList.get(currentQuestionIndex).getCorrect());
         } else if (v.getId() == R.id.next_btn) {
             if (selectedAnswer.isEmpty()) {
                 Toast.makeText(this, "Please select an answer!", Toast.LENGTH_SHORT).show();
             } else {
-                // Yalnız düzgün cavab verilərsə, bal artırılır
-                if (selectedAnswer.equals(questionModelList.get(currentQuestionIndex).getCorrect())) {
+                // Extract just the letter (A/B/C/D) from selected answer
+                String selectedOption = selectedAnswer.substring(0, 1);
+
+                // Get correct answer from question model
+                String correctAnswer = questionModelList.get(currentQuestionIndex).getCorrect();
+
+                // Compare only the letters
+                if (selectedOption.equals(correctAnswer)) {
                     score++;
-                    Log.i("QuizActivity", "Score: " + score);
+                    Log.i("QuizActivity", "Correct! Score: " + score);
+                } else {
+                    Log.i("QuizActivity", "Wrong. Selected: " + selectedOption +
+                            ", Correct: " + correctAnswer);
                 }
 
-                // Növbəti sualı yükləyirik
                 currentQuestionIndex++;
                 if (currentQuestionIndex < questionModelList.size()) {
                     loadQuestions(currentQuestionIndex);
                 } else {
-                    finishQuiz(); // Suallar bitib
+                    finishQuiz();
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.ali.musictest.autorized;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -23,6 +25,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.ali.musictest.R;
 import com.ali.musictest.splash.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.FirebaseApp;
@@ -33,7 +37,7 @@ public class Login extends AppCompatActivity {
 
     EditText mEmail,mPassword;
     Button mLoginBtn;
-    TextView mCreateBtn;
+    TextView mCreateBtn,forgotTextLn;
     ProgressBar progressBar;
     FirebaseAuth fAuth;
 
@@ -48,8 +52,9 @@ public class Login extends AppCompatActivity {
         mEmail = findViewById(R.id.emailTxt);
         mPassword = findViewById(R.id.passwordTxt);
         mLoginBtn = findViewById(R.id.registerBtn);
-        mCreateBtn = findViewById(R.id.createText);
+        mCreateBtn = findViewById(R.id.createTextRegister);
         progressBar = findViewById(R.id.mProgressBar);
+        forgotTextLn =findViewById(R.id.resetPassword);
 
 
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +110,50 @@ public class Login extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), Register.class));
             }
         });
+
+        forgotTextLn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText resetMail = new EditText(view.getContext());
+                AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(view.getContext());
+                passwordResetDialog.setTitle("Reset Password ?");
+                passwordResetDialog.setMessage("Enter Your Email To Received Reset Link.");
+                passwordResetDialog.setView(resetMail);
+
+                passwordResetDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //extract the email and sen reset link
+
+                        String mail = resetMail.getText().toString();
+                        fAuth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(Login.this,"Reset Link Sent To Your Email.",Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(Login.this,"Error ! Reset Link is Not Sent."+e.getMessage(),Toast.LENGTH_SHORT).show();
+
+
+                            }
+                        });
+                    }
+                });
+
+                passwordResetDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //close the dialog
+                    }
+                });
+
+                passwordResetDialog.create().show();
+            }
+        });
+
+
 
 
     }
