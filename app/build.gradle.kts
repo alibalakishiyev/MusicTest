@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.activity)
     implementation ("com.google.firebase:firebase-auth:23.2.0")
     implementation ("com.google.firebase:firebase-firestore:25.1.3")
+    implementation ("com.squareup.picasso:picasso:2.8")
 
 
     // Test Libraries

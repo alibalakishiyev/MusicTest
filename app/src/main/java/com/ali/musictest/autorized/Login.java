@@ -114,8 +114,8 @@ public class Login extends AppCompatActivity {
         forgotTextLn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText resetMail = new EditText(view.getContext());
-                AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(view.getContext());
+                 final EditText resetMail = new EditText(view.getContext());
+                final AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(view.getContext());
                 passwordResetDialog.setTitle("Reset Password ?");
                 passwordResetDialog.setMessage("Enter Your Email To Received Reset Link.");
                 passwordResetDialog.setView(resetMail);
@@ -135,7 +135,6 @@ public class Login extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(Login.this,"Error ! Reset Link is Not Sent."+e.getMessage(),Toast.LENGTH_SHORT).show();
-
 
                             }
                         });
